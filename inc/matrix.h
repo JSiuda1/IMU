@@ -6,7 +6,7 @@
 #include <iostream>
 
 class Matrix{
-  Vector* matrix;
+  Vector** matrix;
   size_t row;
   size_t collumn;
 
@@ -25,17 +25,41 @@ class Matrix{
 };
 
 
-Matrix::Matrix(const size_t & _row, const size_t & _collumn){
-  Vector temp(_collumn); 
+Matrix::Matrix(const size_t& _row, const size_t& _collumn) {
   row = _row;
   collumn = _collumn;
-  
-  matrix = (Vector*)malloc(sizeof(Vector) * row);
-  for(int i=0; i < row; ++i){
-    matrix[i] = temp;
+
+  matrix = (Vector**)malloc(row * sizeof(Vector));
+  for (int i = 0; i < row; ++i) {
+    matrix[i] = (Vector*)calloc(1, sizeof(Vector));
+    *matrix[i] = Vector(_collumn);
   }
 }
 
+void Matrix::test() const{
+  for (int i = 0; i < row; ++i) {
+    std::cout << *matrix[i] << std::endl;
+  }
+}
+
+Matrix::~Matrix() {
+  for (int i = 0; i < row; ++i) {
+    free(matrix[i]);
+  }
+  free(matrix);
+}
+
+/*
+Matrix::Matrix(const size_t & _row, const size_t & _collumn){
+  //Vector temp(_collumn); 
+  row = _row;
+  collumn = _collumn;
+  
+  matrix = new Vector[row];
+  for(int i=0; i < row; ++i){
+    matrix[i] = Vector(collumn);
+  }
+}
 Matrix::Matrix(std::initializer_list<Vector> arg) {
   row = arg.size();
   collumn = arg.begin()->getSize();
@@ -46,9 +70,9 @@ Matrix::Matrix(std::initializer_list<Vector> arg) {
     }
   }
 
-  matrix = (Vector*)malloc(sizeof(Vector) * row);
+  matrix = (Vector*)malloc(sizeof(Vector) * row + sizeof(double)*collumn);
   for(int i=0; i < row; ++i){
-    matrix[i] = *(arg.begin() + i);
+    matrix[i] = Vector(*(arg.begin() + i));
   }
 }
 
@@ -121,6 +145,6 @@ Matrix::~Matrix(){
   }
   free(matrix); //free matrix
 }
-
+*/
 
 #endif

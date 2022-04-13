@@ -4,20 +4,7 @@
 
 
 int main(){
-  Matrix test{{1,1}, {1,1}};
-  Matrix test2{{2,2}, {2,2}};
-  
+  Matrix test(3,3);
   test.test();
-  test2.test();
-
-  //(test2 + test).test();
-  
-  test = test2 + test;
-  test.test();
-  test2.test();
-  std::cout << "XD" << std::endl;
-  test2 + test2;
-  std::cout << "XD" << std::endl;
-  test2.test();
-  return 0;
+  return 1;
 }
