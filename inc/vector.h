@@ -4,166 +4,178 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include <cstring>
 
-template<int SIZE>
 class Vector{
-    double *vec;
+  double *vec;
+  size_t size;
 
-    public:
-    Vector();
-    Vector(std::initializer_list<double> arg);
-    Vector(const Vector<SIZE> & _vec);
-    Vector<SIZE>& operator=(const Vector<SIZE> & arg);
-    Vector<SIZE> operator+(const Vector<SIZE> & arg) const;
-    Vector<SIZE> operator-(const Vector<SIZE> & arg) const;
-    const double & operator[](int index) const;
-    double & operator[](int index);
-    double crossProduct(const Vector<SIZE> & arg) const;
-    double length() const;
-    void normalize();
+  public:
+  Vector() {vec = NULL; size = 0;}; //dump constructor, use only when you know what are you doing
+  Vector(const size_t & _size);
+  Vector(std::initializer_list<double> arg);
+  Vector(const size_t & size, const double & val);
+  Vector(const Vector & _vec);
+  Vector& operator=(const Vector & arg);
+  Vector operator+(const Vector & arg) const;
+  Vector operator-(const Vector & arg) const;
+  const double & operator[](int index) const;
+  double & operator[](int index);
+  size_t getSize() const;
+  double crossProduct() const;
+  double crossProduct(const Vector & arg) const;
+  double length() const;
+  void normalize();
     
-    ~Vector() {free(vec);};
+  ~Vector();
 };
 
-template<int SIZE>
-std::ostream & operator<<(std::ostream & strm, const Vector<SIZE> & arg);
+std::ostream & operator<<(std::ostream & strm, const Vector & arg);
 
-
-template <int SIZE>
-Vector<SIZE>::Vector(){
-  vec = (double*)calloc(SIZE, sizeof(double));
+Vector::Vector(const size_t & _size){
+  size = _size;
+  vec = (double*)calloc(_size, sizeof(double));
 }
 
-template <int SIZE>
-Vector<SIZE>::Vector(std::initializer_list<double> arg){
-  vec = (double*)calloc(SIZE, sizeof(double));
+Vector::Vector(std::initializer_list<double> arg){
+  size = arg.size();
+  vec = (double*)calloc(size, sizeof(double));
 
-  memcpy(vec, arg.begin(), sizeof(double)*SIZE);
+  memcpy(vec, arg.begin(), sizeof(double)*size);
 }
 
-template <int SIZE>
-Vector<SIZE>::Vector(const Vector<SIZE> & _vec){
-  vec = (double*)calloc(SIZE, sizeof(double));
+Vector::Vector(const size_t & _size, const double & val){
+  size = _size;
+  vec = (double*)malloc(size * sizeof(double));
+
+  for(int i=0; i < size; ++i){
+    vec[i] = val;
+  }
+}
+
+Vector::Vector(const Vector & _vec){
+  size = _vec.size;
+  vec = (double*)malloc(size * sizeof(double));
   
-  memcpy(vec, _vec.vec, sizeof(double)*SIZE);
+  memcpy(vec, _vec.vec, sizeof(double)*size);
 }
 
-template <int SIZE>
-Vector<SIZE>& Vector<SIZE>::operator=(const Vector<SIZE> & arg){
-  Vector<SIZE> result;
+Vector& Vector::operator=(const Vector & arg){
+  if(size == arg.size){
+    memcpy(vec, arg.vec, sizeof(double)*size);
 
-  memcpy(vec, arg.vec, sizeof(double)*SIZE);
+  }else if(size == 0){ //dump constructor case 
+    size = arg.size;
+    vec = (double*)malloc(sizeof(double)*size);
+    memcpy(vec, arg.vec, sizeof(double)*size);
+    
+  }else{  //fit to size of arg;
+    size = arg.size;
+    vec = (double*)realloc(vec, sizeof(double)*size);
+    memcpy(vec, arg.vec, sizeof(double)*size);
+  }
 
   return *this;
 }
 
-template <int SIZE>
-Vector<SIZE> Vector<SIZE>::operator+(const Vector<SIZE> & arg) const{
-  Vector<SIZE> result;
 
-  for(int i=0; i<SIZE; ++i){
-    result.vec[i] = vec[i] + arg.vec[i];
+Vector Vector::operator+(const Vector & arg) const{
+  Vector result(size);
+
+  if(size == arg.size){
+    for(int i=0; i < size; ++i){
+      result.vec[i] = vec[i] + arg.vec[i];
+    }
+  }
+  
+  return result;
+}
+
+Vector Vector::operator-(const Vector & arg) const{
+  Vector result(size);
+
+  if(size == arg.size){
+    for(int i=0; i < size; ++i){
+      result.vec[i] = vec[i] - arg.vec[i];
+    }
   }
 
   return result;
 }
 
-template <int SIZE>
-Vector<SIZE> Vector<SIZE>::operator-(const Vector<SIZE> & arg) const{
-  Vector<SIZE> result;
 
-  for(int i=0; i<SIZE; ++i){
-    result.vec[i] = vec[i] - arg.vec[i];
-  }
-
-  return result;
-}
-
-template <int SIZE>
-const double & Vector<SIZE>::operator[](int index) const{
-  if(index < 0 || index >= SIZE){
+const double & Vector::operator[](int index) const{
+  if(index < 0 || index >= size){
     return vec[0];
   }
   
   return vec[index];
 }
 
-template <int SIZE>
-double & Vector<SIZE>::operator[](int index){
-  if(index < 0 || index >= SIZE){
+
+double & Vector::operator[](int index){
+  if(index < 0 || index >= size){
     return vec[0]; //to not throwing exception
   }
   
   return vec[index];
 }
 
-template <int SIZE>
-double Vector<SIZE>::crossProduct(const Vector<SIZE> & arg) const{
-  double result = 0; 
-  for(int i=0; i<SIZE; ++i){
-    result += vec[i] * arg[i];
+size_t Vector::getSize() const{
+  return size;
+}
+
+double Vector::crossProduct() const{
+  double result = 0;
+  
+  for(int i=0; i < size; ++i){
+    result += vec[i] * vec[i];
   }
     
   return result;
 }
 
-template <int SIZE>
-double Vector<SIZE>::length() const{
+double Vector::crossProduct(const Vector & arg) const{
+  double result = 0;
+  if(size == arg.size){
+    for(int i=0; i < size; ++i){
+      result += vec[i] * arg[i];
+    }
+  } 
+    
+  return result;
+}
+
+double Vector::length() const{
   return sqrt(this->crossProduct(*this));
 }
 
-template <int SIZE>
-void Vector<SIZE>::normalize(){
+void Vector::normalize(){
   double norm = length();
   
   if(norm == 0){
     return; //zero vector case 
   }
   
-  for(int i=0; i < SIZE; ++i){
+  for(int i=0; i < size; ++i){
     vec[i] = vec[i]/norm;
   }
 }
 
-/*
-
-template <int SIZE>
-std::vector<double> Vector<SIZE>::get_points() const{
-    return point;
+Vector::~Vector(){
+  free(vec);
 }
 
-
-
-
-
-
-
-template <int SIZE>
-double Vector<SIZE>::length() const{
-    double sum = 0;
-
-    for(double elem: point)
-        sum += elem*elem;
-
-    return sqrt(sum);
-}
-*/
-
-
-template <int SIZE>
-std::ostream & operator<<(std::ostream & strm, const Vector<SIZE> & arg){
+std::ostream & operator<<(std::ostream & strm, const Vector & arg){
+    size_t size = arg.getSize();
     strm<<"[";
 
-    for(int i=0; i<SIZE-1; ++i)
-        strm<<arg[i]<<", ";
-
-    strm<<arg[SIZE-1]<<"]";
+    for(int i=0; i<size-1; ++i){
+      strm<<arg[i]<<", ";
+    }
+    strm<<arg[size-1]<<"]";
 
     return strm;
 }
-
-template class Vector<3>;
-template std::ostream & operator<<(std::ostream & strm, const Vector<3> & arg);
-
 
 #endif
