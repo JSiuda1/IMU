@@ -70,9 +70,11 @@ Vector& Vector::operator=(const Vector & arg){
     memcpy(vec, arg.vec, sizeof(double)*size);
     
   }else{  //fit to size of arg;
+    /*
     size = arg.size;
     vec = (double*)realloc(vec, sizeof(double)*size);
     memcpy(vec, arg.vec, sizeof(double)*size);
+    */
   }
 
   return *this;
