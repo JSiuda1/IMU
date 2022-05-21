@@ -44,12 +44,12 @@ Matrix::Matrix(const size_t& _row, const size_t& _collumn) {
 Matrix::Matrix(std::initializer_list<Vector> arg) {
   row = arg.size();
   collumn = arg.begin()->getSize();
-  
+  /*
   for(int i = 0; i < row; ++i){
     if(collumn != (arg.begin() + i)->getSize()){
       throw std::invalid_argument("Matrix is not mxn");
     }
-  }
+  }*/
 
   matrix = new Vector[row];
   for(int i=0; i < row; ++i){

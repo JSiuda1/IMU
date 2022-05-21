@@ -1,24 +1,15 @@
 #include <iostream>
 #include "matrix.h"
-#include "vector.h"
+#include "quaternion.h"
 
 
 int main(){
-  Matrix test{{1,2}, {3,4}};
-  Vector testv{9,9,9};
-  Matrix res(2,1);
-  
-  for(int i=0; i<2; i++){
-    std::cout << test[i] << std::endl;
-  }
-  
-  for(int i=0; i<2; i++){
-    test[i] = testv;
-  }
-
-  for(int i=0; i<2; i++){
-    std::cout << test[i] << std::endl;
-  }
+  Quaternion q(1,2,3,4);
+  q.test();
+  q.conjugate();
+  q.test();
+  q.normalize();
+  q.test();
 
   return 1;
 }

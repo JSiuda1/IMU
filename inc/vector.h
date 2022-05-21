@@ -34,19 +34,19 @@ std::ostream & operator<<(std::ostream & strm, const Vector & arg);
 
 Vector::Vector(const size_t & _size){
   size = _size;
-  vec = (double*)calloc(_size, sizeof(double));
+  vec = new double[_size];
+  memset(vec, 0, size);
 }
 
 Vector::Vector(std::initializer_list<double> arg){
   size = arg.size();
-  vec = (double*)calloc(size, sizeof(double));
-
+  vec = new double[size];
   memcpy(vec, arg.begin(), sizeof(double)*size);
 }
 
 Vector::Vector(const size_t & _size, const double & val){
   size = _size;
-  vec = (double*)malloc(size * sizeof(double));
+  vec = new double[size];
 
   for(int i=0; i < size; ++i){
     vec[i] = val;
@@ -55,7 +55,7 @@ Vector::Vector(const size_t & _size, const double & val){
 
 Vector::Vector(const Vector & _vec){
   size = _vec.size;
-  vec = (double*)malloc(size * sizeof(double));
+  vec = new double[size];
   
   memcpy(vec, _vec.vec, sizeof(double)*size);
 }
@@ -165,7 +165,7 @@ void Vector::normalize(){
 }
 
 Vector::~Vector(){
-  free(vec);
+  delete[] vec;
 }
 
 std::ostream & operator<<(std::ostream & strm, const Vector & arg){
